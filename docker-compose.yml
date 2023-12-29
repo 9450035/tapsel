@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    hostname: mongo
+    restart: unless-stopped
+    ports:
+      - 27017:27017
+    networks:
+      main-network: { }
+    command: [ "--bind_ip", "0.0.0.0" ]
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: tapsel
+    container_name: tapsel
+    restart: on-failure
+    depends_on:
+      - mongo
+    ports:
+      - 8081:8081
+    environment:
+      - SPRING_DATA_MONGODB_HOST=mongo
+      - SPRING_DATA_MONGODB_PORT=27017
+    networks:
+      main-network: { }
+
+networks:
+  main-network:
+
